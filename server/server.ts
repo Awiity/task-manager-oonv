@@ -1,8 +1,6 @@
-// server.ts
 import express from 'express';
 import cors from 'cors';
 import Database from 'better-sqlite3';
-import path from 'path';
 
 // 1. Singleton Pattern - Database Connection
 class DatabaseManager {
@@ -63,7 +61,7 @@ class TaskStatusFactory {
   }
 }
 
-// 3. Observer Pattern - Task Event Notifier
+// 3. Observer Pattern - Task Event Notifier (Event logging)
 interface TaskObserver {
   onTaskCreated(task: Task): void;
   onTaskUpdated(task: Task): void;
@@ -97,7 +95,6 @@ class TaskEventNotifier {
   }
 }
 
-// Task Model
 interface Task {
   id?: number;
   title: string;
@@ -111,19 +108,18 @@ interface Task {
 // Logger Observer Implementation
 class TaskLogger implements TaskObserver {
   onTaskCreated(task: Task): void {
-    console.log(`📝 Task created: ${task.title}`);
+    console.log(`Task created: ${task.title}`);
   }
 
   onTaskUpdated(task: Task): void {
-    console.log(`✏️ Task updated: ${task.title}`);
+    console.log(`Task updated: ${task.title}`);
   }
 
   onTaskDeleted(taskId: number): void {
-    console.log(`🗑️ Task deleted: ID ${taskId}`);
+    console.log(`Task deleted: ID ${taskId}`);
   }
 }
 
-// Task Service
 class TaskService {
   private db: Database.Database;
   private notifier: TaskEventNotifier;
@@ -203,14 +199,12 @@ class TaskService {
   }
 }
 
-// Express App Setup
 const app = express();
 const taskService = new TaskService();
 
 app.use(cors());
 app.use(express.json());
 
-// API Routes
 app.get('/api/tasks', (req, res) => {
   try {
     const tasks = taskService.getAllTasks();
@@ -275,7 +269,7 @@ app.get('/api/statuses', (req, res) => {
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
 
 export default app;
